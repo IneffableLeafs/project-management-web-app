@@ -158,7 +158,29 @@ def register():
 def about():
 	return render_template("about.html")
 
-@app.route("/test")
+@app.route("/create", methods=["GET", "POST"])
 @login_required
-def test():
-	return render_template("test.html")
+def create():
+
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+        # Ensure project name was submitted
+        if not request.form.get("project_name"):
+            return apology("must provide project name", 403)
+
+        # store project name and description as variables
+        project_name = request.form.get("project_name")
+        project_description = request.form.get("project_description")
+        
+        # connect to sqlite3 and put name and description into database
+        conn = create_connection("global.db")
+        db = conn.cursor()
+        db.execute("INSERT INTO users ('username', 'hash') VALUES (?, ?)", (username, password))
+        rows = db.fetchall()
+        conn.commit()
+        conn.close()
+
+
+    # User reached route via GET (as by clicking a link or via redirect)
+    else:
+	   return render_template("create.html")

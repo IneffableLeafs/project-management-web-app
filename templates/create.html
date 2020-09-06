@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Create New Project
+{% endblock %}
+
+{% block main %}
+    <div class="column is-4 is-offset-4">
+    <h3 class="title">Create A Project</h3>
+    <div class="box">
+        <form action="/create" method="post">
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" name="create_project" placeholder="Project Name" type="text">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <textarea class="textarea" name="project_description" placeholder="Describe your project..." type="text"></textarea>
+                </div>
+            </div>
+
+            <button class="button is-block is-dark is-large is-fullwidth">Submit</button>
+        </form>
+    </div>
+    </div>
+{% endblock %}
