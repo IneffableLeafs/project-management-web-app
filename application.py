@@ -1,5 +1,4 @@
 import os
-
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
@@ -7,7 +6,6 @@ from werkzeug.exceptions import default_exceptions, HTTPException, InternalServe
 from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3
 from sqlite3 import Error
-
 from helpers import login_required, create_connection
 
 # Configure application
@@ -183,4 +181,4 @@ def create():
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
-	   return render_template("create.html")
+        return render_template("create.html")
