@@ -50,11 +50,13 @@ def login():
 
         # Ensure username was submitted
         if not request.form.get("username"):
-            return apology("must provide username", 403)
+            return render_template("error.html", error_message="must provide username")
+
 
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return apology("must provide password", 403)
+            return render_template("error.html", error_message="must provide password")
+
 
         db = conn.cursor()
         username = request.form.get("username")
@@ -65,7 +67,8 @@ def login():
 
         # Ensure username exists and password is correct
         if rows == [] or not check_password_hash(rows[0][2], request.form.get("password")):
-            return apology("invalid username and/or password", 403)
+            return render_template("error.html", error_message="invalid username and/or password")
+
 
         # Remember which user has logged in
         session["user_id"] = rows[0][0]
@@ -73,7 +76,7 @@ def login():
         conn.close()
 
         # Redirect user to home page
-        return redirect("/")
+        return render_template("index.html", username=username)
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -106,19 +109,23 @@ def register():
 
         # Ensure username was submitted
         if not request.form.get("username"):
-            return apology("must provide username", 403)
+            return render_template("error.html", error_message="must provide password")
+
 
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return apology("must provide password", 403)
+            return render_template("error.html", error_message="must provide password")
+
 
         # Ensure password confirmation was submitted
         elif not request.form.get("confirmation"):
-            return apology("must provide password confirmation", 403)
+            return render_template("error.html", error_message="must confirm password")
+
 
         # Ensure the confirmation is the same as the password
         elif request.form.get("password") != request.form.get("confirmation"):
-        	return apology("passwords don't match", 403)
+        	return render_template("error.html", error_message="passwords don't match")
+
 
         # Get username and password
         username = request.form.get("username")
@@ -133,7 +140,8 @@ def register():
 
         # Ensure username exists and password is correct
         if len(rows) == 1:
-            return apology("username already taken", 403)
+            return render_template("error.html", error_message="username already taken")
+
 
         # Add the new user to the database
 
@@ -164,7 +172,7 @@ def create():
     if request.method == "POST":
         # Ensure project name was submitted
         if not request.form.get("project_name"):
-            return apology("must provide project name", 403)
+            return render_template("error.html", error_message="must provide project name")
 
         # store project name and description as variables
         project_name = request.form.get("project_name")
@@ -178,7 +186,7 @@ def create():
         conn.commit()
         conn.close()
 
-
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("create.html")
+
