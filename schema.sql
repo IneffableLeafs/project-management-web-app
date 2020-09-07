@@ -4,3 +4,18 @@ CREATE TABLE users (
 	hash TEXT NOT NULL
 	);
 
+CREATE TABLE projects (
+	id INTEGER PRIMARY KEY,
+	owner INTEGER NOT NULL,
+	name TEXT NOT NULL,
+	description TEXT,
+	FOREIGN KEY (owner) REFERENCES users (id)
+	);
+
+CREATE TABLE tasks (
+	task_id INTEGER PRIMARY KEY,
+	task TEXT NOT NULL,
+	deadline TEXT,
+	project_id INT NOT NULL,
+	FOREIGN KEY (project_id) REFERENCES projects (id)
+	);
