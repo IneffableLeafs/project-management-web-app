@@ -7,6 +7,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3
 from sqlite3 import Error
 from helpers import login_required, create_connection
+from datetime import date
 
 # Configure application
 app = Flask(__name__)
@@ -32,7 +33,21 @@ Session(app)
 @app.route("/")
 @login_required
 def index():
-	return render_template("index.html")
+    # Set up database for queries
+    conn = create_connection("global.db")
+    db = conn.cursor()
+    user_id = str(session['user_id'])
+    # Query database for username
+    db.execute("SELECT username FROM users WHERE id=?", user_id)
+    user = db.fetchall()
+    user = user[0][0]
+    conn.commit()
+    today = date.today()
+    print(today) # 2020-09-07
+    day = today.strftime("%B %d, %Y")
+    print(day) # September 07, 2020
+    return render_template("index.html", username=user, current_date=day)
+    
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -61,7 +76,7 @@ def login():
         db = conn.cursor()
         username = request.form.get("username")
         # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = ?", username)
+        rows = db.execute("SELECT * FROM users WHERE username = ?", (username,))
         rows = db.fetchall()
         conn.commit()
 
@@ -76,7 +91,7 @@ def login():
         conn.close()
 
         # Redirect user to home page
-        return render_template("index.html", username=username)
+        return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -129,13 +144,16 @@ def register():
 
         # Get username and password
         username = request.form.get("username")
+        print(username)
         password = generate_password_hash(request.form.get("password"))
+        print(password)
 
         db = conn.cursor()
         db2 = conn2.cursor()
 		# Query database for username
-        db.execute("SELECT * FROM users WHERE username=?", username)
+        db.execute("SELECT * FROM users WHERE username=?", (username,))
         rows = db.fetchall()
+        print(rows)
         conn.commit()
 
         # Ensure username exists and password is correct
@@ -181,12 +199,46 @@ def create():
         # connect to sqlite3 and put name and description into database
         conn = create_connection("global.db")
         db = conn.cursor()
-        db.execute("INSERT INTO users ('username', 'hash') VALUES (?, ?)", (username, password))
+        db.execute("INSERT INTO projects ('owner', 'name', 'description') VALUES (?, ?, ?)", (session['user_id'], project_name, project_description))
         rows = db.fetchall()
         conn.commit()
         conn.close()
 
+        return render_template("index.html")
+
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("create.html")
+
+@app.route("/project")
+@login_required
+def project():
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+        # Ensure project name was submitted
+        if not request.form.get("project_name"):
+            return render_template("error.html", error_message="must provide project name")
+
+        # store project name and description as variables
+        project_name = request.form.get("project_name")
+        project_description = request.form.get("project_description")
+        
+        # connect to sqlite3 and put name and description into database
+        conn = create_connection("global.db")
+        db = conn.cursor()
+        db.execute("INSERT INTO projects ('owner', 'name', 'description') VALUES (?, ?, ?)", (session['user_id'], project_name, project_description))
+        rows = db.fetchall()
+        conn.commit()
+        conn.close()
+
+        return render_template("projects.html")
+
+    # User reached route via GET (as by clicking a link or via redirect)
+    else:
+        return render_template("projects.html")
+
+
+
+
+
 

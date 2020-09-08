@@ -10,6 +10,9 @@
             <h2 style="margin-bottom:1cm;" class="title">Welcome back to Crown {{ username }}!</h2>
         </div>
         <div class="textPadding">
+            <h2 style="margin-bottom:1cm;" class="title">Today is {{ current_date }}</h2>
+        </div>
+        <div class="textPadding">
             <h1 style="margin-bottom:0.25cm;" class="title">Dashboard</h1>
         </div>
     </body>    
@@ -20,7 +23,20 @@
 	      <div class="tile is-parent is-vertical">
 	        <article class="tile is-child notification is-danger">
 	          <p class="title">Deadlines</p>
-	          <p class="subtitle">Put a table here that shows tasks if they have a deadline, and organize them by date.</p>
+	          <table class="table is-bordered is-striped is-hoverable">
+				  <thead>
+				    <tr>	
+				      <th>Date Due</th>		 
+				      <th>Project</th>
+				      <th>Task</th>
+				    </tr>
+				  </thead>
+				  <tbody>
+				  	<tr>
+				  	  <th>September 8, 2020</th>
+				  	  <th>Project mgmt app</th>
+				  	  <th>Finish the app</th>
+			  </table>
 	        </article>
 	      </div>
 	    </div>
@@ -28,7 +44,12 @@
 	      <div class="tile is-parent is-vertical">
 	        <article class="tile is-child notification is-info">
 	          <p class="title">Projects</p>
-	          <p class="subtitle">Have a button for each project, that leads to each project page.</p>
+	          <form method="POST" action="/projects">
+	          	<button id=homepage_buttons name=project_1 class="button is-block is-warning is-large is-fullwidth">Project 1</button>
+	      	  </form>
+	      	  <form method="POST" action="/projects">
+	          	<button id=homepage_buttons name=project_2 class="button is-block is-warning is-large is-fullwidth">Project 2</button>
+	      	  </form>
 	        </article>
 	      </div>
 	      <div class="tile is-parent">
