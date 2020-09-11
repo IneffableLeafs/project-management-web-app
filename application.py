@@ -1,3 +1,5 @@
+# most of lines 3-32 is CS50x distribution code
+
 import os
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
 from flask_session import Session
@@ -37,16 +39,40 @@ def index():
     conn = create_connection("global.db")
     db = conn.cursor()
     user_id = str(session['user_id'])
+
     # Query database for username
     db.execute("SELECT username FROM users WHERE id=?", user_id)
     user = db.fetchall()
+
+    # query database for project names
+    db.execute("SELECT name FROM projects WHERE owner=?", user_id)
+    project_names = db.fetchall()
+    refined_project_names = []
+    for project in project_names:
+        refined_project_names.append(project[0])
+    print(refined_project_names)
+
+    # query database for tasks
+    #db.execute("get the task names")
+    #task_names = db.fetchall()
+    #print(task_names)
+
+    # query database for close deadlines
+    #db.execute("get close deadlines to now (within one week lets say)")
+    #deadlines = db.fetchall()
+
     user = user[0][0]
     conn.commit()
     today = date.today()
     print(today) # 2020-09-07
     day = today.strftime("%B %d, %Y")
     print(day) # September 07, 2020
-    return render_template("index.html", username=user, current_date=day)
+
+    # we need to make another three queries here,
+    # 1. for the project buttons
+    # 2. for the deadline table
+    # 3. for the tasks
+    return render_template("index.html", username=user, current_date=day, refined_project_names=refined_project_names)
     
 
 @app.route("/login", methods=["GET", "POST"])
@@ -204,7 +230,7 @@ def create():
         conn.commit()
         conn.close()
 
-        return render_template("index.html")
+        return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:

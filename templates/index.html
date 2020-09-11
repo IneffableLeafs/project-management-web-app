@@ -44,12 +44,13 @@
 	      <div class="tile is-parent is-vertical">
 	        <article class="tile is-child notification is-info">
 	          <p class="title">Projects</p>
+	          {% if refined_project_names %}
+	          {% for project in refined_project_names %}
 	          <form method="POST" action="/projects">
-	          	<button id=homepage_buttons name=project_1 class="button is-block is-warning is-large is-fullwidth">Project 1</button>
+	          	<button id=homepage_buttons name="{{ project }}" class="button is-block is-warning is-large is-fullwidth">{{ project }}</button>
 	      	  </form>
-	      	  <form method="POST" action="/projects">
-	          	<button id=homepage_buttons name=project_2 class="button is-block is-warning is-large is-fullwidth">Project 2</button>
-	      	  </form>
+	      	  {% endfor %}
+	      	  {% endif %}
 	        </article>
 	      </div>
 	      <div class="tile is-parent">
