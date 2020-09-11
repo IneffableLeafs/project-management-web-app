@@ -211,9 +211,12 @@ def about():
 @app.route("/create", methods=["GET", "POST"])
 @login_required
 def create():
-
+    
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
+
+        user_id = str(session['user_id'])
+
         # Ensure project name was submitted
         if not request.form.get("project_name"):
             return render_template("error.html", error_message="must provide project name")
@@ -221,9 +224,19 @@ def create():
         # store project name and description as variables
         project_name = request.form.get("project_name")
         project_description = request.form.get("project_description")
+
+
+        # check if project name is already taken
+        conn = create_connection("global.db")
+        db = conn.cursor()
+        db.execute("SELECT name FROM projects WHERE owner=? AND name=?", (user_id, project_name))
+        # check if the project name already exists for someone with the same username
+        exists = db.fetchall()
+
+        if len(exists) == 1:
+            return render_template("error.html", error_message="project name already exists, try another name")
         
         # connect to sqlite3 and put name and description into database
-        conn = create_connection("global.db")
         db = conn.cursor()
         db.execute("INSERT INTO projects ('owner', 'name', 'description') VALUES (?, ?, ?)", (session['user_id'], project_name, project_description))
         rows = db.fetchall()
@@ -236,28 +249,25 @@ def create():
     else:
         return render_template("create.html")
 
-@app.route("/project")
+@app.route("/projects", methods=["GET", "POST"])
 @login_required
 def project():
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-        # Ensure project name was submitted
-        if not request.form.get("project_name"):
-            return render_template("error.html", error_message="must provide project name")
-
-        # store project name and description as variables
-        project_name = request.form.get("project_name")
-        project_description = request.form.get("project_description")
         
-        # connect to sqlite3 and put name and description into database
+        # store project name 
+        project_name = request.form.get('name')
+        
+        # use the name to get project details (tasks, deadlines):
         conn = create_connection("global.db")
         db = conn.cursor()
-        db.execute("INSERT INTO projects ('owner', 'name', 'description') VALUES (?, ?, ?)", (session['user_id'], project_name, project_description))
+        db.execute("")
         rows = db.fetchall()
         conn.commit()
         conn.close()
 
-        return render_template("projects.html")
+
+        return render_template("projects.html", name=project_name)
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:

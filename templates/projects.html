@@ -5,5 +5,32 @@
 {% endblock %}
 
 {% block main %}
-    <h3>Put projects here</h3>
+    <div class="textPadding">
+            <h1 style="margin-bottom:0.25cm;" class="title">{{ name }}</h1>
+    </div>
+    <div class="tile is-ancestor">
+	  <div class="tile is-vertical is-12">
+	  	<div class="tile">
+	      <div class="tile is-parent">
+	        <article class="tile is-child notification is-success">
+	          <p class="title">Tasks</p>
+	          <p class="subtitle">List the tasks, and put a completion button next to them, as well as days left till due.</p>
+	        </article>
+	      </div>
+	    </div>
+	    <div class="tile">
+	      <div class="tile is-parent is-vertical">
+	        <article class="tile is-child notification is-info">
+	          <p class="title">Options</p>
+	          <form method="POST" action="/projects">
+	          	<button id=project_button name=add_task class="button is-block is-warning is-large is-fullwidth">Add Task</button>
+	          	<button id=project_button name=delete_task class="button is-block is-warning is-large is-fullwidth">Delete Task</button>
+	          	<button id=project_button name=complete_task class="button is-block is-warning is-large is-fullwidth">Complete Task</button>
+	      	  </form>
+	        </article>
+	      </div>
+	    </div>
+	    
+	  </div>
+	</div>
 {% endblock %}

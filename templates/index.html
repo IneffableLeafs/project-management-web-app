@@ -47,7 +47,7 @@
 	          {% if refined_project_names %}
 	          {% for project in refined_project_names %}
 	          <form method="POST" action="/projects">
-	          	<button id=homepage_buttons name="{{ project }}" class="button is-block is-warning is-large is-fullwidth">{{ project }}</button>
+	          	<button id=homepage_buttons name=name value="{{ project }}" class="button is-block is-warning is-fullwidth">{{ project }}</button>
 	      	  </form>
 	      	  {% endfor %}
 	      	  {% endif %}
