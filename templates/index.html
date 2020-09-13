@@ -50,6 +50,8 @@
 	          	<button id=homepage_buttons name=name value="{{ project }}" class="button is-block is-warning is-fullwidth">{{ project }}</button>
 	      	  </form>
 	      	  {% endfor %}
+	      	  {% else %}
+	      	  <p class="subtitle">You have no projects, create one using the button above.</p>
 	      	  {% endif %}
 	        </article>
 	      </div>

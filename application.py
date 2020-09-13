@@ -50,7 +50,6 @@ def index():
     refined_project_names = []
     for project in project_names:
         refined_project_names.append(project[0])
-    print(refined_project_names)
 
     # query database for tasks
     #db.execute("get the task names")
@@ -258,7 +257,8 @@ def project():
         # store project name 
         project_name = request.form.get('name')
         
-        # use the name to get project details (tasks, deadlines):
+        # use the name to get project details (tasks, deadlines):\
+        # TODO
         conn = create_connection("global.db")
         db = conn.cursor()
         db.execute("")
@@ -273,6 +273,54 @@ def project():
     else:
         return render_template("projects.html")
 
+@app.route("/tasks", methods=["GET", "POST"])
+@login_required
+def tasks():
+
+    # User reached route via POST (clicked to add a task)
+    if request.method == "POST":
+
+        project_name = request.form.get('add_task')
+        print(project_name)
+
+        return render_template("tasks.html", project=project_name)
+
+    # User reached route via GET (by submitting the form detailing the task)
+    else:
+        return redirect("/")
+
+@app.route("/add-task", methods=["POST"])
+@login_required
+def add_task():
+
+    # get project name to help add to database
+    project_name = request.form.get('confirm_add_task')
+    print(project_name)
+
+    # get user id to help add to database
+    user_id = str(session['user_id'])
+
+    # store task details 
+    task_name = request.form.get('task')
+    print(task_name)
+    deadline = request.form.get('deadline')
+    print(deadline)
+
+    # get the project id for the selected task
+    conn = create_connection("global.db")
+    db = conn.cursor()
+    db.execute("SELECT id FROM projects WHERE name=?", (project_name,))
+    project_id = db.fetchall()
+    print(project_id)
+    project_id = project_id[0][0]
+
+    # add the task to the database:
+    db.execute("INSERT INTO tasks ('task', 'deadline', 'project_id') VALUES (?, ?, ?)", (task_name, deadline, project_id))
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/")
 
 
 

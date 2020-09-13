@@ -22,9 +22,13 @@
 	      <div class="tile is-parent is-vertical">
 	        <article class="tile is-child notification is-info">
 	          <p class="title">Options</p>
-	          <form method="POST" action="/projects">
-	          	<button id=project_button name=add_task class="button is-block is-warning is-large is-fullwidth">Add Task</button>
+	          <form method="POST" action="/tasks">
+	          	<button id=project_button name=add_task value="{{ name }}" class="button is-block is-warning is-large is-fullwidth">Add Task</button>
+	          </form>
+	          <form method="POST" action="/">
 	          	<button id=project_button name=delete_task class="button is-block is-warning is-large is-fullwidth">Delete Task</button>
+	          </form>
+	          <form method="POST" action="/">
 	          	<button id=project_button name=complete_task class="button is-block is-warning is-large is-fullwidth">Complete Task</button>
 	      	  </form>
 	        </article>

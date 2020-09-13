@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Add Task to Your Project 
+{% endblock %}
+
+{% block main %}
+    <div class="is-offset-4">
+    <h3 class="title">Add Task</h3>
+    <div class="box">
+        <form action="/tasks" method="GET">
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" name="task" placeholder="Add task to {{ project }}..." type="text" autofocus="">
+                </div>
+            </div>
+            Create a deadline day:
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" name="deadline" placeholder="Deadline" type="date">
+                </div>
+            </div>
+            <button name=confirm_add_task value="{{ project }}" class="button is-block is-dark is-large is-fullwidth">Confirm Add Task</button>
+        </form>
+    </div>
+    </div>
+{% endblock %}
