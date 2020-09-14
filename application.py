@@ -9,7 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3
 from sqlite3 import Error
 from helpers import login_required, create_connection
-from datetime import date
+from datetime import date, datetime
 
 # Configure application
 app = Flask(__name__)
@@ -50,15 +50,31 @@ def index():
     refined_project_names = []
     for project in project_names:
         refined_project_names.append(project[0])
+    print(refined_project_names)
 
-    # query database for tasks
-    #db.execute("get the task names")
-    #task_names = db.fetchall()
-    #print(task_names)
+    # query database for project ids that user owns
+    db.execute("SELECT id FROM projects WHERE owner=?", user_id)
+    project_ids = db.fetchall()
+    refined_project_ids = []
+    for identification in project_ids:
+        refined_project_ids.append(identification[0])
+    ids = str(refined_project_ids)
 
-    # query database for close deadlines
-    #db.execute("get close deadlines to now (within one week lets say)")
-    #deadlines = db.fetchall()
+    # query database for deadlines (detailed tasks)
+    db.execute("SELECT task, deadline, project_id FROM tasks WHERE project_id IN (%s)" % ','.join('?'*len(ids)), ids)
+    task_deadline_tuple = db.fetchall()
+    print(task_deadline_tuple)
+
+    # turn the list of tuples into a list of lists
+    task_deadlines = [list(item) for item in task_deadline_tuple]
+    print(task_deadlines)
+
+    # add the project name to this list
+    for task in task_deadlines:
+        db.execute("SELECT name FROM projects WHERE id=?", str(task[2]))
+        project_name = db.fetchall()
+        task[2] = project_name[0][0]
+    print(task_deadlines)
 
     user = user[0][0]
     conn.commit()
@@ -67,11 +83,7 @@ def index():
     day = today.strftime("%B %d, %Y")
     print(day) # September 07, 2020
 
-    # we need to make another three queries here,
-    # 1. for the project buttons
-    # 2. for the deadline table
-    # 3. for the tasks
-    return render_template("index.html", username=user, current_date=day, refined_project_names=refined_project_names)
+    return render_template("index.html", username=user, current_date=day, refined_project_names=refined_project_names, info=task_deadlines)
     
 
 @app.route("/login", methods=["GET", "POST"])
@@ -80,7 +92,6 @@ def login():
 
     # Set up database for queries
     conn = create_connection("global.db")
-
 
     # Forget any user_id
     session.clear()
@@ -254,20 +265,49 @@ def project():
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         
-        # store project name 
-        project_name = request.form.get('name')
-        
-        # use the name to get project details (tasks, deadlines):\
-        # TODO
+        # get user id:
+        user_id = str(session['user_id'])
+
         conn = create_connection("global.db")
         db = conn.cursor()
-        db.execute("")
-        rows = db.fetchall()
+
+        # store project name 
+        project_name = request.form.get('name')
+
+        # get project description
+        db.execute("SELECT description FROM projects WHERE name=?", (project_name,))
+        project_description = db.fetchall()
+        project_description = project_description[0][0]
+        
+        # get project id:
+        # query database for project in question:
+        db.execute("SELECT id FROM projects WHERE owner=? AND name=?", (user_id, project_name))
+        project_id = db.fetchall()
+        refined_project_id = []
+        for identification in project_id:
+            refined_project_id.append(identification[0])
+        print(refined_project_id)
+        
+        # use the name to get project details (tasks, deadlines):
+        db.execute("SELECT task, deadline FROM tasks WHERE project_id=?", str(refined_project_id[0]))
+        task_deadline_tuple = db.fetchall()
         conn.commit()
         conn.close()
 
+        # turn the list of tuples into a list of lists
+        task_deadlines = [list(item) for item in task_deadline_tuple]
 
-        return render_template("projects.html", name=project_name)
+        # we want to change the date format from yyyy-mm-dd to Month dd, yyyy:
+        for task in task_deadlines:
+            task_due_date = datetime.strptime(task[1], "%Y-%m-%d")
+            task[1] = task_due_date.strftime("%B %d, %Y")
+            print(task[1])
+        
+        today = date.today()
+        day = today.strftime("%B %d, %Y")
+
+
+        return render_template("projects.html", name=project_name, info=task_deadlines, current_day=day, desc=project_description)
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -293,25 +333,31 @@ def tasks():
 @login_required
 def add_task():
 
+    # check if the user entered a day that already happened
+    deadline = request.form.get('deadline')
+    deadline_date = datetime.strptime(deadline, "%Y-%m-%d")
+    print(deadline)
+    print(deadline_date)
+    current_date = datetime.now()
+    print(current_date)
+    if deadline_date.date() < current_date.date():
+        return render_template("error.html", error_message="please enter a due date today or after today's date")
+
     # get project name to help add to database
     project_name = request.form.get('confirm_add_task')
-    print(project_name)
 
     # get user id to help add to database
     user_id = str(session['user_id'])
 
     # store task details 
     task_name = request.form.get('task')
-    print(task_name)
     deadline = request.form.get('deadline')
-    print(deadline)
 
     # get the project id for the selected task
     conn = create_connection("global.db")
     db = conn.cursor()
     db.execute("SELECT id FROM projects WHERE name=?", (project_name,))
     project_id = db.fetchall()
-    print(project_id)
     project_id = project_id[0][0]
 
     # add the task to the database:

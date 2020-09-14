@@ -7,6 +7,8 @@
 {% block main %}
     <div class="textPadding">
             <h1 style="margin-bottom:0.25cm;" class="title">{{ name }}</h1>
+            <h2 style="margin-bottom:0.25cm;" class="title">Today is: {{ current_day }}</h2>
+            <h2 style="margin-bottom:0.25cm;" class="title">{{ desc }}</h2>
     </div>
     <div class="tile is-ancestor">
 	  <div class="tile is-vertical is-12">
@@ -14,7 +16,24 @@
 	      <div class="tile is-parent">
 	        <article class="tile is-child notification is-success">
 	          <p class="title">Tasks</p>
-	          <p class="subtitle">List the tasks, and put a completion button next to them, as well as days left till due.</p>
+	          {% if info %}
+	          <table class="table is-bordered is-striped is-hoverable">
+				  <thead>
+				    <tr>
+				      <th>Task</th>
+				      <th>Date Due</th>	
+				    </tr>
+				  </thead>
+				  {% for pair in info %}
+				  <tbody>
+				  	<tr>
+				  	  <th>{{ pair[0] }}</th>
+				  	  <th>{{ pair[1] }}</th>
+				  {% endfor %}
+			  </table>
+	      	  {% else %}
+	      	  <p class="subtitle">You have no tasks, create one using the button below.</p>
+			  {% endif %}
 	        </article>
 	      </div>
 	    </div>
@@ -25,8 +44,8 @@
 	          <form method="POST" action="/tasks">
 	          	<button id=project_button name=add_task value="{{ name }}" class="button is-block is-warning is-large is-fullwidth">Add Task</button>
 	          </form>
-	          <form method="POST" action="/">
-	          	<button id=project_button name=delete_task class="button is-block is-warning is-large is-fullwidth">Delete Task</button>
+	          <form method="POST" action="/delete_task">
+	          	<button id=project_button name=delete_task value="{{ name }}" class="button is-block is-warning is-large is-fullwidth">Delete Task</button>
 	          </form>
 	          <form method="POST" action="/">
 	          	<button id=project_button name=complete_task class="button is-block is-warning is-large is-fullwidth">Complete Task</button>

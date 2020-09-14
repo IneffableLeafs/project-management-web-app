@@ -23,20 +23,24 @@
 	      <div class="tile is-parent is-vertical">
 	        <article class="tile is-child notification is-danger">
 	          <p class="title">Deadlines</p>
+	          {% if info %}
 	          <table class="table is-bordered is-striped is-hoverable">
 				  <thead>
-				    <tr>	
-				      <th>Date Due</th>		 
-				      <th>Project</th>
+				    <tr>	 
 				      <th>Task</th>
+				      <th>Date Due</th>	
+				      <th>Project</th>
 				    </tr>
 				  </thead>
+				  {% for parameters in info %}
 				  <tbody>
 				  	<tr>
-				  	  <th>September 8, 2020</th>
-				  	  <th>Project mgmt app</th>
-				  	  <th>Finish the app</th>
+				  	  <th>{{ parameters[0] }}</th>
+				  	  <th>{{ parameters[1] }}</th>
+				  	  <th>{{ parameters[2] }}</th>
+				  {% endfor %}
 			  </table>
+			  {% endif %}
 	        </article>
 	      </div>
 	    </div>
@@ -53,12 +57,6 @@
 	      	  {% else %}
 	      	  <p class="subtitle">You have no projects, create one using the button above.</p>
 	      	  {% endif %}
-	        </article>
-	      </div>
-	      <div class="tile is-parent">
-	        <article class="tile is-child notification is-success">
-	          <p class="title">Tasks</p>
-	          <p class="subtitle">List the tasks, and put a completion button next to them, as well as days left till due.</p>
 	        </article>
 	      </div>
 	    </div>
