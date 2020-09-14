@@ -1,7 +1,6 @@
 # most of lines 3-32 is CS50x distribution code
 
 import os
-import requests
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp

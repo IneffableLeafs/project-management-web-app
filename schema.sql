@@ -22,5 +22,6 @@ CREATE TABLE tasks (
 
 CREATE TABLE completed (
 	task TEXT NOT NULL,
-	date TEXT NOT NULL
+	date TEXT NOT NULL,
+	user_id INTEGER PRIMARY KEY
 	);
