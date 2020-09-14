@@ -1,6 +1,7 @@
 # most of lines 3-32 is CS50x distribution code
 
 import os
+import requests
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
@@ -10,6 +11,7 @@ import sqlite3
 from sqlite3 import Error
 from helpers import login_required, create_connection
 from datetime import date, datetime
+from emails import 
 
 # Configure application
 app = Flask(__name__)
@@ -60,8 +62,14 @@ def index():
         refined_project_ids.append(identification[0])
     ids = str(refined_project_ids)
 
+    # query database for completed tasks:
+    db.execute("SELECT * FROM completed")
+    completed_tasks = db.fetchall()
+    print(completed_tasks)
+
     # query database for deadlines (detailed tasks)
-    db.execute("SELECT task, deadline, project_id FROM tasks WHERE project_id IN (%s)" % ','.join('?'*len(ids)), ids)
+    db.execute("SELECT task, deadline, project_id FROM tasks WHERE project_id IN (%s)"
+                 % ','.join('?'*len(ids)), ids)
     task_deadline_tuple = db.fetchall()
     print(task_deadline_tuple)
 
@@ -83,7 +91,9 @@ def index():
     day = today.strftime("%B %d, %Y")
     print(day) # September 07, 2020
 
-    return render_template("index.html", username=user, current_date=day, refined_project_names=refined_project_names, info=task_deadlines)
+    return render_template("index.html", username=user, current_date=day, 
+                            refined_project_names=refined_project_names, 
+                            info=task_deadlines, completed_tasks=completed_tasks)
     
 
 @app.route("/login", methods=["GET", "POST"])
@@ -248,7 +258,8 @@ def create():
         
         # connect to sqlite3 and put name and description into database
         db = conn.cursor()
-        db.execute("INSERT INTO projects ('owner', 'name', 'description') VALUES (?, ?, ?)", (session['user_id'], project_name, project_description))
+        db.execute("INSERT INTO projects ('owner', 'name', 'description') VALUES (?, ?, ?)", 
+                    (session['user_id'], project_name, project_description))
         rows = db.fetchall()
         conn.commit()
         conn.close()
@@ -307,7 +318,8 @@ def project():
         day = today.strftime("%B %d, %Y")
 
 
-        return render_template("projects.html", name=project_name, info=task_deadlines, current_day=day, desc=project_description)
+        return render_template("projects.html", name=project_name, info=task_deadlines, 
+                                current_day=day, desc=project_description)
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -361,7 +373,8 @@ def add_task():
     project_id = project_id[0][0]
 
     # add the task to the database:
-    db.execute("INSERT INTO tasks ('task', 'deadline', 'project_id') VALUES (?, ?, ?)", (task_name, deadline, project_id))
+    db.execute("INSERT INTO tasks ('task', 'deadline', 'project_id') VALUES (?, ?, ?)",
+                (task_name, deadline, project_id))
 
     conn.commit()
     conn.close()
@@ -411,13 +424,9 @@ def delete():
 @login_required
 def delete_task():
 
-    print("does this work")
     # get task name to delete
     task_name = request.form.get('task')
     print(task_name)
-
-    # get user id to help add to database
-    user_id = str(session['user_id'])
 
     # delete the task from the database
     conn = create_connection("global.db")
@@ -460,11 +469,32 @@ def complete():
         conn.commit()
         conn.close()
 
-        return render_template("delete.html", project=project_name, tasks=updated_tasklist)
+        return render_template("complete.html", project=project_name, tasks=updated_tasklist)
 
     # User reached route via GET (by submitting the form detailing the task)
     else:
         return redirect("/")
 
+@app.route("/complete-task", methods=["POST"])
+@login_required
+def complete_task():
 
+    # get task name to complete
+    task_name = request.form.get('task')
+    print(task_name)
+
+    # get todays date for the date of completion
+    today = date.today()
+
+    # add the completed task to the completed database table
+    conn = create_connection("global.db")
+    db = conn.cursor()
+    db.execute("INSERT INTO completed ('task', 'date') VALUES (?, ?)", (task_name, today))
+
+    # delete the completed tasks from the tasks database table
+    db.execute("DELETE FROM tasks WHERE task=?", (task_name,))
+    conn.commit()
+    conn.close()
+
+    return redirect("/")
 

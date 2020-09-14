@@ -19,3 +19,8 @@ CREATE TABLE tasks (
 	project_id INT NOT NULL,
 	FOREIGN KEY (project_id) REFERENCES projects (id)
 	);
+
+CREATE TABLE completed (
+	task TEXT NOT NULL,
+	date TEXT NOT NULL
+	);
