@@ -61,7 +61,7 @@ def index():
     ids = str(refined_project_ids)
 
     # query database for completed tasks:
-    db.execute("SELECT * FROM completed")
+    db.execute("SELECT task, date FROM completed WHERE user_id=?", user_id)
     completed_tasks = db.fetchall()
     print(completed_tasks)
 
@@ -477,6 +477,9 @@ def complete():
 @login_required
 def complete_task():
 
+    # get current user id
+    user_id = str(session['user_id'])
+
     # get task name to complete
     task_name = request.form.get('task')
     print(task_name)
@@ -487,7 +490,7 @@ def complete_task():
     # add the completed task to the completed database table
     conn = create_connection("global.db")
     db = conn.cursor()
-    db.execute("INSERT INTO completed ('task', 'date') VALUES (?, ?)", (task_name, today))
+    db.execute("INSERT INTO completed ('task', 'date', 'user_id') VALUES (?, ?, ?)", (task_name, today, user_id))
 
     # delete the completed tasks from the tasks database table
     db.execute("DELETE FROM tasks WHERE task=?", (task_name,))

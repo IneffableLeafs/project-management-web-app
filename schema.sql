@@ -23,5 +23,6 @@ CREATE TABLE tasks (
 CREATE TABLE completed (
 	task TEXT NOT NULL,
 	date TEXT NOT NULL,
-	user_id INTEGER PRIMARY KEY
+	user_id INT NOT NULL,
+	FOREIGN KEY (user_id) REFERENCES users (id)
 	);
