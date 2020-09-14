@@ -368,7 +368,103 @@ def add_task():
 
     return redirect("/")
 
+@app.route("/delete", methods=["GET", "POST"])
+@login_required
+def delete():
 
+    # User reached route via POST (clicked to delete a task)
+    if request.method == "POST":
+
+        project_name = request.form.get('delete_task')
+        print(project_name)
+
+        # get the tasks for this project, by first getting the id:
+        conn = create_connection("global.db")
+        db = conn.cursor()
+        db.execute("SELECT id FROM projects WHERE name=?", (project_name,))
+        project_id = db.fetchall()
+        project_id = project_id[0][0]
+
+        # and then getting the tasks
+        db.execute("SELECT task FROM tasks WHERE project_id=?", (project_id,))
+        tasks = db.fetchall()
+        print(tasks)
+
+        # turn the list of tuples into a list of lists
+        tasklist = [list(item) for item in tasks]
+        updated_tasklist = []
+        for task in tasklist:
+            updated_tasklist.append(task[0])
+
+        print(updated_tasklist)
+        conn.commit()
+        conn.close()
+
+        return render_template("delete.html", project=project_name, tasks=updated_tasklist)
+
+    # User reached route via GET (by submitting the form detailing the task)
+    else:
+        return redirect("/")
+
+
+@app.route("/delete-task", methods=["POST"])
+@login_required
+def delete_task():
+
+    print("does this work")
+    # get task name to delete
+    task_name = request.form.get('task')
+    print(task_name)
+
+    # get user id to help add to database
+    user_id = str(session['user_id'])
+
+    # delete the task from the database
+    conn = create_connection("global.db")
+    db = conn.cursor()
+    db.execute("DELETE FROM tasks WHERE task=?", (task_name,))
+    conn.commit()
+    conn.close()
+
+    return redirect("/")
+
+@app.route("/complete", methods=["GET", "POST"])
+@login_required
+def complete():
+
+    # User reached route via POST (clicked to delete a task)
+    if request.method == "POST":
+
+        project_name = request.form.get('complete_task')
+        print(project_name)
+
+        # get the tasks for this project, by first getting the id:
+        conn = create_connection("global.db")
+        db = conn.cursor()
+        db.execute("SELECT id FROM projects WHERE name=?", (project_name,))
+        project_id = db.fetchall()
+        project_id = project_id[0][0]
+
+        # and then getting the tasks
+        db.execute("SELECT task FROM tasks WHERE project_id=?", (project_id,))
+        tasks = db.fetchall()
+        print(tasks)
+
+        # turn the list of tuples into a list of lists
+        tasklist = [list(item) for item in tasks]
+        updated_tasklist = []
+        for task in tasklist:
+            updated_tasklist.append(task[0])
+
+        print(updated_tasklist)
+        conn.commit()
+        conn.close()
+
+        return render_template("delete.html", project=project_name, tasks=updated_tasklist)
+
+    # User reached route via GET (by submitting the form detailing the task)
+    else:
+        return redirect("/")
 
 
 

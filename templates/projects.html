@@ -44,16 +44,16 @@
 	          <form method="POST" action="/tasks">
 	          	<button id=project_button name=add_task value="{{ name }}" class="button is-block is-warning is-large is-fullwidth">Add Task</button>
 	          </form>
-	          <form method="POST" action="/delete_task">
+	          <form method="POST" action="/delete">
 	          	<button id=project_button name=delete_task value="{{ name }}" class="button is-block is-warning is-large is-fullwidth">Delete Task</button>
 	          </form>
-	          <form method="POST" action="/">
-	          	<button id=project_button name=complete_task class="button is-block is-warning is-large is-fullwidth">Complete Task</button>
+	          <form method="POST" action="/complete">
+	          	<button id=project_button name=complete_task value="{{ name }}" class="button is-block is-warning is-large is-fullwidth">Complete Task</button>
 	      	  </form>
 	        </article>
 	      </div>
 	    </div>
-	    
+	    </div>
 	  </div>
 	</div>
 {% endblock %}

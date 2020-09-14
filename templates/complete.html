@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Delete A Task
+{% endblock %}
+
+{% block main %}
+    <div class="is-offset-4">
+    <h3 class="title">Delete a Task From {{ project }}</h3>
+    <div class="box">
+      {% for task in tasks %}
+      <form method="POST" action="/delete-task">
+        <button id=homepage_buttons name=task value="{{ task }}" class="button is-block is-dark is-fullwidth">{{ task }}</button>
+      </form>
+      {% endfor %}
+    </div>
+    </div>
+{% endblock %}

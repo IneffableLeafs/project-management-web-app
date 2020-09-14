@@ -40,6 +40,8 @@
 				  	  <th>{{ parameters[2] }}</th>
 				  {% endfor %}
 			  </table>
+			  {% else %}
+			  <p class="subtitle">You have no deadlines, add a project and add tasks to those projects to create deadlines.</p>
 			  {% endif %}
 	        </article>
 	      </div>
@@ -60,6 +62,30 @@
 	        </article>
 	      </div>
 	    </div>
+	    <div class="tile">
+	      <div class="tile is-parent">
+	        <article class="tile is-child notification is-success">
+	          <p class="title">Completed Tasks</p>
+	          {% if info %}
+	          <table class="table is-bordered is-striped is-hoverable">
+				  <thead>
+				    <tr>
+				      <th>Task</th>
+				      <th>Date Completed</th>	
+				    </tr>
+				  </thead>
+				  {% for pair in info %}
+				  <tbody>
+				  	<tr>
+				  	  <th>{{ pair[0] }}</th>
+				  	  <th>{{ pair[1] }}</th>
+				  {% endfor %}
+			  </table>
+	      	  {% else %}
+	      	  <p class="subtitle">You have no tasks, create one using the button below.</p>
+			  {% endif %}
+	        </article>
+	      </div>
 	  </div>
 	</div>
 {% endblock %}
