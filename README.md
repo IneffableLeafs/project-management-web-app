@@ -1,15 +1,3 @@
-This web application is a project management tool called Crown.
+This is a Flask-Python based web application: a project management tool called Crown.
 
-It incorporates key features that project management tools should have, including:
-
-Creating Projects
-Adding Tasks to those projects
-Adding Subtasks to those tasks
-Adding Deadlines to Tasks, Projects, and Subtasks
-User Roles in the Project (i.e. leader, marketing, engineering, PR, etc.)
-Message Board for project discussion
-Milestones and Progress Bar
-Dashboards for overview
-Search function to search for projects, tasks, and people
-User Profiles
-And Email Notifications
+You can use it to keep track of your projects and its related tasks and deadlines, with emphasis on a simple, clean interface. It includes a complex database system on the backend, complete with separate tables for users (authentication), projects, tasks, and completed tasks (history), utilizing some CS50x distribution code from the Finance problem set.
