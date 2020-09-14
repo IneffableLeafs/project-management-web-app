@@ -11,7 +11,6 @@ import sqlite3
 from sqlite3 import Error
 from helpers import login_required, create_connection
 from datetime import date, datetime
-from emails import 
 
 # Configure application
 app = Flask(__name__)
